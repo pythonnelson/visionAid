@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { StyleSheet, Text, View } from "react-native"
-import { Camera, useCameraDevice, useCameraPermission } from "react-native-vision-camera"
+import { Camera, useCameraDevice, useCameraPermission, useFrameOutput } from "react-native-vision-camera"
+
 
 function App(): React.JSX.Element {
   const device = useCameraDevice("back")
@@ -11,6 +12,21 @@ function App(): React.JSX.Element {
       requestPermission()
     }
   }, [hasPermission, requestPermission])
+
+  const frameOutput = useFrameOutput({
+    pixelFormat: 'yuv',
+
+    enablePreviewSizedOutputBuffers: true,
+    dropFramesWhileBusy: true,
+
+    onFrame(frame) {
+      'worklet';
+
+      console.log(`VisionAid frame: ${frame.width} x ${frame.height}`)
+
+      frame.dispose()
+    }
+  })
 
   if (!hasPermission) {
     return (
@@ -36,6 +52,7 @@ function App(): React.JSX.Element {
         style={StyleSheet.absoluteFill}
         device={device}
         isActive={true}
+        outputs={[frameOutput]}
       />
     </View>
   )

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://nitro.margelo.com/nitro.schema.json",
+  "cxxNamespace": [
+    "VisionAidObjectDetector"
+  ],
+  "ios": {
+    "iosModuleName": "NitroVisionaidobjectdetector"
+  },
+  "android": {
+    "androidNamespace": [
+      "VisionAidObjectDetector"
+    ],
+    "androidCxxLibName": "NitroVisionaidobjectdetector"
+  },
+  "autolinking": {},
+  "ignorePaths": [
+    "**/node_modules"
+  ]
+}
