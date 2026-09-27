@@ -1,0 +1,10 @@
+package com.margelo.nitro.VisionAidObjectDetector
+
+import com.margelo.nitro.camera.HybridFrameSpec
+
+class HybridVisionAidObjectDetector :
+    HybridVisionAidObjectDetectorSpec() {
+    override fun detect(frame: HybridFrameSpec) {
+        // Frame received successfully
+    }
+}

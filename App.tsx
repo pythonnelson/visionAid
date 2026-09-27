@@ -1,7 +1,8 @@
 import { useEffect } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import { Camera, useCameraDevice, useCameraPermission, useFrameOutput } from "react-native-vision-camera"
-
+import { NitroModules } from "react-native-nitro-modules"
+import type { VisionAidObjectDetector } from "./VisionAidObjectDetector/src"
 
 function App(): React.JSX.Element {
   const device = useCameraDevice("back")
@@ -13,6 +14,8 @@ function App(): React.JSX.Element {
     }
   }, [hasPermission, requestPermission])
 
+  const objectDetector = NitroModules.createHybridObject<VisionAidObjectDetector>('VisionAidObjectDetector')
+
   const frameOutput = useFrameOutput({
     pixelFormat: 'yuv',
 
@@ -22,8 +25,7 @@ function App(): React.JSX.Element {
     onFrame(frame) {
       'worklet';
 
-      console.log(`VisionAid frame: ${frame.width} x ${frame.height}`)
-
+      objectDetector.detect(frame)
       frame.dispose()
     }
   })

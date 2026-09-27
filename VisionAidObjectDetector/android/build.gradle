@@ -139,4 +139,7 @@ dependencies {
 
   // VisionCamera
   implementation project(":react-native-vision-camera")
+
+  implementation "androidx.camera:camera-core:1.4.2"
+  implementation "com.google.mlkit:object-detection:17.0.2"
 }
