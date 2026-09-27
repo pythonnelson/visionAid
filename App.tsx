@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { StyleSheet, Text, View } from "react-native"
 import { Camera, useCameraDevice, useCameraPermission, useFrameOutput } from "react-native-vision-camera"
 import { NitroModules } from "react-native-nitro-modules"
@@ -14,8 +14,10 @@ function App(): React.JSX.Element {
     }
   }, [hasPermission, requestPermission])
 
-  const objectDetector = NitroModules.createHybridObject<VisionAidObjectDetector>('VisionAidObjectDetector')
-
+  const objectDetector = useMemo(
+      () => NitroModules.createHybridObject<VisionAidObjectDetector>('VisionAidObjectDetector'),
+      []
+    )
   const frameOutput = useFrameOutput({
     pixelFormat: 'yuv',
 
