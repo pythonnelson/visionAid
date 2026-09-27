@@ -16,6 +16,7 @@
 #include <NitroModules/HybridObjectRegistry.hpp>
 
 #include "JHybridVisionAidObjectDetectorSpec.hpp"
+#include <NitroModules/DefaultConstructableObject.hpp>
 
 namespace margelo::nitro::VisionAidObjectDetector {
 
@@ -25,7 +26,14 @@ int initialize(JavaVM* vm) {
   });
 }
 
-
+struct JHybridVisionAidObjectDetectorSpecImpl: public jni::JavaClass<JHybridVisionAidObjectDetectorSpecImpl, JHybridVisionAidObjectDetectorSpec::JavaPart> {
+  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/VisionAidObjectDetector/HybridVisionAidObjectDetector;";
+  static std::shared_ptr<JHybridVisionAidObjectDetectorSpec> create() {
+    static const auto constructorFn = javaClassStatic()->getConstructor<JHybridVisionAidObjectDetectorSpecImpl::javaobject()>();
+    jni::local_ref<JHybridVisionAidObjectDetectorSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);
+    return javaPart->getJHybridVisionAidObjectDetectorSpec();
+  }
+};
 
 void registerAllNatives() {
   using namespace margelo::nitro;
@@ -35,7 +43,12 @@ void registerAllNatives() {
   margelo::nitro::VisionAidObjectDetector::JHybridVisionAidObjectDetectorSpec::CxxPart::registerNatives();
 
   // Register Nitro Hybrid Objects
-  
+  HybridObjectRegistry::registerHybridObjectConstructor(
+    "VisionAidObjectDetector",
+    []() -> std::shared_ptr<HybridObject> {
+      return JHybridVisionAidObjectDetectorSpecImpl::create();
+    }
+  );
 }
 
 } // namespace margelo::nitro::VisionAidObjectDetector

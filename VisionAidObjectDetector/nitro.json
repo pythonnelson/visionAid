@@ -12,7 +12,14 @@
     ],
     "androidCxxLibName": "NitroVisionaidobjectdetector"
   },
-  "autolinking": {},
+  "autolinking": {
+    "VisionAidObjectDetector": {
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "HybridVisionAidObjectDetector"
+      }
+    }
+  },
   "ignorePaths": [
     "**/node_modules"
   ]
