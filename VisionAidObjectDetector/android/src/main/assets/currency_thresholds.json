@@ -1,0 +1,5 @@
+{
+ "accept_threshold": 0.98,
+ "chosen_on": "validation (hard augmentation) only",
+ "rule": "validation: zero false notes on NO_NOTE and zero wrong denominations (v2) + safety margin 0.005 (v3 -> tau 0.98); v1 was <=1% / <=0.5% -> tau 0.965"
+}

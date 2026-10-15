@@ -15,6 +15,7 @@
 #include <fbjni/fbjni.h>
 #include <NitroModules/HybridObjectRegistry.hpp>
 
+#include "JHybridVisionAidCurrencyRecognizerSpec.hpp"
 #include "JHybridVisionAidObjectDetectorSpec.hpp"
 #include <NitroModules/DefaultConstructableObject.hpp>
 
@@ -34,12 +35,21 @@ struct JHybridVisionAidObjectDetectorSpecImpl: public jni::JavaClass<JHybridVisi
     return javaPart->getJHybridVisionAidObjectDetectorSpec();
   }
 };
+struct JHybridVisionAidCurrencyRecognizerSpecImpl: public jni::JavaClass<JHybridVisionAidCurrencyRecognizerSpecImpl, JHybridVisionAidCurrencyRecognizerSpec::JavaPart> {
+  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/VisionAidObjectDetector/HybridVisionAidCurrencyRecognizer;";
+  static std::shared_ptr<JHybridVisionAidCurrencyRecognizerSpec> create() {
+    static const auto constructorFn = javaClassStatic()->getConstructor<JHybridVisionAidCurrencyRecognizerSpecImpl::javaobject()>();
+    jni::local_ref<JHybridVisionAidCurrencyRecognizerSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);
+    return javaPart->getJHybridVisionAidCurrencyRecognizerSpec();
+  }
+};
 
 void registerAllNatives() {
   using namespace margelo::nitro;
   using namespace margelo::nitro::VisionAidObjectDetector;
 
   // Register native JNI methods
+  margelo::nitro::VisionAidObjectDetector::JHybridVisionAidCurrencyRecognizerSpec::CxxPart::registerNatives();
   margelo::nitro::VisionAidObjectDetector::JHybridVisionAidObjectDetectorSpec::CxxPart::registerNatives();
 
   // Register Nitro Hybrid Objects
@@ -47,6 +57,12 @@ void registerAllNatives() {
     "VisionAidObjectDetector",
     []() -> std::shared_ptr<HybridObject> {
       return JHybridVisionAidObjectDetectorSpecImpl::create();
+    }
+  );
+  HybridObjectRegistry::registerHybridObjectConstructor(
+    "VisionAidCurrencyRecognizer",
+    []() -> std::shared_ptr<HybridObject> {
+      return JHybridVisionAidCurrencyRecognizerSpecImpl::create();
     }
   );
 }

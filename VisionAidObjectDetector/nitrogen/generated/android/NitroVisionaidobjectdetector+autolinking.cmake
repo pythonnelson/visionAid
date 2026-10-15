@@ -33,8 +33,10 @@ target_sources(
   # Autolinking Setup
   ../nitrogen/generated/android/NitroVisionaidobjectdetectorOnLoad.cpp
   # Shared Nitrogen C++ sources
+  ../nitrogen/generated/shared/c++/HybridVisionAidCurrencyRecognizerSpec.cpp
   ../nitrogen/generated/shared/c++/HybridVisionAidObjectDetectorSpec.cpp
   # Android-specific Nitrogen C++ sources
+  ../nitrogen/generated/android/c++/JHybridVisionAidCurrencyRecognizerSpec.cpp
   ../nitrogen/generated/android/c++/JHybridVisionAidObjectDetectorSpec.cpp
 )
 

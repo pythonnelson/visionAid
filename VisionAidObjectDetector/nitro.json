@@ -18,6 +18,12 @@
         "language": "kotlin",
         "implementationClassName": "HybridVisionAidObjectDetector"
       }
+    },
+    "VisionAidCurrencyRecognizer": {
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "HybridVisionAidCurrencyRecognizer"
+      }
     }
   },
   "ignorePaths": [

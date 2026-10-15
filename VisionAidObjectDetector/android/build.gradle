@@ -142,4 +142,8 @@ dependencies {
 
   implementation "androidx.camera:camera-core:1.4.2"
   implementation "org.tensorflow:tensorflow-lite:2.17.0"
+
+  // Unit tests (run on the computer, no phone needed)
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.json:json:20231013"   // org.json is only a stub in Android unit tests
 }

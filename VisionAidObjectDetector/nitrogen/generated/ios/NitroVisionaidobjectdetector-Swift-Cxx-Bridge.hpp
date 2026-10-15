@@ -10,21 +10,27 @@
 // Forward declarations of C++ defined types
 // Forward declaration of `HybridFrameSpec` to properly resolve imports.
 namespace margelo::nitro::camera { class HybridFrameSpec; }
+// Forward declaration of `HybridVisionAidCurrencyRecognizerSpec` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { class HybridVisionAidCurrencyRecognizerSpec; }
 // Forward declaration of `HybridVisionAidObjectDetectorSpec` to properly resolve imports.
 namespace margelo::nitro::VisionAidObjectDetector { class HybridVisionAidObjectDetectorSpec; }
 
 // Forward declarations of Swift defined types
 // Forward declaration of `HybridFrameSpec_cxx` to properly resolve imports.
 namespace VisionCamera { class HybridFrameSpec_cxx; }
+// Forward declaration of `HybridVisionAidCurrencyRecognizerSpec_cxx` to properly resolve imports.
+namespace NitroVisionaidobjectdetector { class HybridVisionAidCurrencyRecognizerSpec_cxx; }
 // Forward declaration of `HybridVisionAidObjectDetectorSpec_cxx` to properly resolve imports.
 namespace NitroVisionaidobjectdetector { class HybridVisionAidObjectDetectorSpec_cxx; }
 
 // Include C++ defined types
+#include "HybridVisionAidCurrencyRecognizerSpec.hpp"
 #include "HybridVisionAidObjectDetectorSpec.hpp"
 #include <NitroModules/Result.hpp>
 #include <VisionCamera/HybridFrameSpec.hpp>
 #include <exception>
 #include <memory>
+#include <string>
 
 /**
  * Contains specialized versions of C++ templated types so they can be accessed from Swift,
@@ -44,6 +50,45 @@ namespace margelo::nitro::VisionAidObjectDetector::bridge::swift {
   using std__weak_ptr_margelo__nitro__camera__HybridFrameSpec_ = std::weak_ptr<margelo::nitro::camera::HybridFrameSpec>;
   inline std__weak_ptr_margelo__nitro__camera__HybridFrameSpec_ weakify_std__shared_ptr_margelo__nitro__camera__HybridFrameSpec_(const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec>& strong) noexcept { return strong; }
   
+  // pragma MARK: std::shared_ptr<HybridVisionAidCurrencyRecognizerSpec>
+  /**
+   * Specialized version of `std::shared_ptr<HybridVisionAidCurrencyRecognizerSpec>`.
+   */
+  using std__shared_ptr_HybridVisionAidCurrencyRecognizerSpec_ = std::shared_ptr<HybridVisionAidCurrencyRecognizerSpec>;
+  std::shared_ptr<HybridVisionAidCurrencyRecognizerSpec> create_std__shared_ptr_HybridVisionAidCurrencyRecognizerSpec_(void* NON_NULL swiftUnsafePointer) noexcept;
+  void* NON_NULL get_std__shared_ptr_HybridVisionAidCurrencyRecognizerSpec_(std__shared_ptr_HybridVisionAidCurrencyRecognizerSpec_ cppType);
+  
+  // pragma MARK: std::weak_ptr<HybridVisionAidCurrencyRecognizerSpec>
+  using std__weak_ptr_HybridVisionAidCurrencyRecognizerSpec_ = std::weak_ptr<HybridVisionAidCurrencyRecognizerSpec>;
+  inline std__weak_ptr_HybridVisionAidCurrencyRecognizerSpec_ weakify_std__shared_ptr_HybridVisionAidCurrencyRecognizerSpec_(const std::shared_ptr<HybridVisionAidCurrencyRecognizerSpec>& strong) noexcept { return strong; }
+  
+  // pragma MARK: Result<void>
+  using Result_void_ = Result<void>;
+  inline Result_void_ create_Result_void_() noexcept {
+    return Result<void>::withValue();
+  }
+  inline Result_void_ create_Result_void_(const std::exception_ptr& error) noexcept {
+    return Result<void>::withError(error);
+  }
+  
+  // pragma MARK: Result<bool>
+  using Result_bool_ = Result<bool>;
+  inline Result_bool_ create_Result_bool_(bool value) noexcept {
+    return Result<bool>::withValue(std::move(value));
+  }
+  inline Result_bool_ create_Result_bool_(const std::exception_ptr& error) noexcept {
+    return Result<bool>::withError(error);
+  }
+  
+  // pragma MARK: Result<std::string>
+  using Result_std__string_ = Result<std::string>;
+  inline Result_std__string_ create_Result_std__string_(const std::string& value) noexcept {
+    return Result<std::string>::withValue(value);
+  }
+  inline Result_std__string_ create_Result_std__string_(const std::exception_ptr& error) noexcept {
+    return Result<std::string>::withError(error);
+  }
+  
   // pragma MARK: std::shared_ptr<HybridVisionAidObjectDetectorSpec>
   /**
    * Specialized version of `std::shared_ptr<HybridVisionAidObjectDetectorSpec>`.
@@ -55,14 +100,5 @@ namespace margelo::nitro::VisionAidObjectDetector::bridge::swift {
   // pragma MARK: std::weak_ptr<HybridVisionAidObjectDetectorSpec>
   using std__weak_ptr_HybridVisionAidObjectDetectorSpec_ = std::weak_ptr<HybridVisionAidObjectDetectorSpec>;
   inline std__weak_ptr_HybridVisionAidObjectDetectorSpec_ weakify_std__shared_ptr_HybridVisionAidObjectDetectorSpec_(const std::shared_ptr<HybridVisionAidObjectDetectorSpec>& strong) noexcept { return strong; }
-  
-  // pragma MARK: Result<void>
-  using Result_void_ = Result<void>;
-  inline Result_void_ create_Result_void_() noexcept {
-    return Result<void>::withValue();
-  }
-  inline Result_void_ create_Result_void_(const std::exception_ptr& error) noexcept {
-    return Result<void>::withError(error);
-  }
 
 } // namespace margelo::nitro::VisionAidObjectDetector::bridge::swift
