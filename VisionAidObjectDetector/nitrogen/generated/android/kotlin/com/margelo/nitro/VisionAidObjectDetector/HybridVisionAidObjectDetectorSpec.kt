@@ -33,6 +33,26 @@ abstract class HybridVisionAidObjectDetectorSpec: HybridObject() {
   @DoNotStrip
   @Keep
   abstract fun detect(frame: com.margelo.nitro.camera.HybridFrameSpec): Unit
+  
+  @DoNotStrip
+  @Keep
+  abstract fun getStableDetections(): StableDetections
+  
+  @DoNotStrip
+  @Keep
+  abstract fun drainEvents(): Array<DetectionEvent>
+  
+  @DoNotStrip
+  @Keep
+  abstract fun reset(): Unit
+  
+  @DoNotStrip
+  @Keep
+  abstract fun speak(text: String, interrupt: Boolean): Unit
+  
+  @DoNotStrip
+  @Keep
+  abstract fun stopSpeaking(): Unit
 
   // Default implementation of `HybridObject.toString()`
   override fun toString(): String {

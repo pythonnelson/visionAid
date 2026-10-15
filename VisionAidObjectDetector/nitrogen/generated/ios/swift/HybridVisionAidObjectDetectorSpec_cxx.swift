@@ -139,4 +139,67 @@ open class HybridVisionAidObjectDetectorSpec_cxx {
       return bridge.create_Result_void_(__exceptionPtr)
     }
   }
+  
+  @inline(__always)
+  public final func getStableDetections() -> bridge.Result_StableDetections_ {
+    do {
+      let __result = try self.__implementation.getStableDetections()
+      let __resultCpp = __result
+      return bridge.create_Result_StableDetections_(__resultCpp)
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_StableDetections_(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func drainEvents() -> bridge.Result_std__vector_DetectionEvent__ {
+    do {
+      let __result = try self.__implementation.drainEvents()
+      let __resultCpp = { () -> bridge.std__vector_DetectionEvent_ in
+        var __vector = bridge.create_std__vector_DetectionEvent_(__result.count)
+        for __item in __result {
+          __vector.push_back(__item)
+        }
+        return __vector
+      }()
+      return bridge.create_Result_std__vector_DetectionEvent__(__resultCpp)
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_std__vector_DetectionEvent__(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func reset() -> bridge.Result_void_ {
+    do {
+      try self.__implementation.reset()
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func speak(text: std.string, interrupt: Bool) -> bridge.Result_void_ {
+    do {
+      try self.__implementation.speak(text: String(text), interrupt: interrupt)
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
+  
+  @inline(__always)
+  public final func stopSpeaking() -> bridge.Result_void_ {
+    do {
+      try self.__implementation.stopSpeaking()
+      return bridge.create_Result_void_()
+    } catch (let __error) {
+      let __exceptionPtr = __error.toCpp()
+      return bridge.create_Result_void_(__exceptionPtr)
+    }
+  }
 }

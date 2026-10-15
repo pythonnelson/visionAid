@@ -83,6 +83,8 @@ class HybridVisionAidObjectDetector :
     private var loggedFirstFrame = false
     private var snapshotCounter = 0
     private val stabilizer = DetectionStabilizer(enterScore = CONFIDENCE_THRESHOLD)
+    private val store = StableDetectionStore()
+    private val speech = SpeechOutput(TAG)
 
     init {
         interpreter = Interpreter(
@@ -130,6 +132,7 @@ class HybridVisionAidObjectDetector :
         outputScores = Array(1) { FloatArray(maxDetections) }
         outputs = hashMapOf(0 to outputBoxes, 1 to outputClasses, 2 to outputScores, 3 to outputCount)
 
+        speech.ensureStarted()   // start text-to-speech now so the first spoken phrase is not lost
         Log.d(TAG, "Model $MODEL_FILE loaded, ${labels.size} labels")
         Log.d(
             TAG,
@@ -181,6 +184,12 @@ class HybridVisionAidObjectDetector :
             val stability = stabilizer.update(result.detections) // enter 0.60, keep 0.35
             for (d in stability.appeared) Log.i(TAG, "STABLE appeared: $d")
             for (id in stability.disappeared) Log.i(TAG, "STABLE disappeared: class=$id (${labels.labelFor(id)})")
+            store.update(
+                stability,
+                Orientation.uprightWidth(yuv.cropWidth, yuv.cropHeight, rotation),
+                Orientation.uprightHeight(yuv.cropWidth, yuv.cropHeight, rotation),
+                SystemClock.elapsedRealtime(), labels
+            )
 
             logDiagnostics(frame, image, rotation, mirrored, result, stability, t1 - t0, t2 - t1)
             maybeSaveSnapshot(yuv, rotation, mirrored)
@@ -193,6 +202,36 @@ class HybridVisionAidObjectDetector :
             }
         }
     }
+
+    // ---- API for JavaScript (see VisionAidObjectDetector.nitro.ts). These never touch the camera thread's buffers.
+
+    override fun getStableDetections(): StableDetections {
+        val snap = store.snapshot()
+        val age = if (snap.atMs == 0L) -1.0 else (SystemClock.elapsedRealtime() - snap.atMs).toDouble()
+        return StableDetections(
+            snap.frameWidth.toDouble(), snap.frameHeight.toDouble(), age,
+            snap.detections.map { it.toDetectedObject() }.toTypedArray()
+        )
+    }
+
+    override fun drainEvents(): Array<DetectionEvent> =
+        store.drain().map {
+            DetectionEvent(if (it.appeared) DetectionEventType.APPEARED else DetectionEventType.DISAPPEARED, it.detection.toDetectedObject())
+        }.toTypedArray()
+
+    @Synchronized
+    override fun reset() {
+        store.clear()
+        stabilizer.reset()
+    }
+
+    override fun speak(text: String, interrupt: Boolean) { speech.speak(text, interrupt) }
+
+    override fun stopSpeaking() { speech.stop() }
+
+    private fun Detection.toDetectedObject() = DetectedObject(
+        label, classId.toDouble(), score.toDouble(), left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble()
+    )
 
     /** Copies the three YUV planes into reusable arrays (honouring row/pixel strides). */
     private fun copyPlanes(image: Image, crop: android.graphics.Rect): YuvFrame {

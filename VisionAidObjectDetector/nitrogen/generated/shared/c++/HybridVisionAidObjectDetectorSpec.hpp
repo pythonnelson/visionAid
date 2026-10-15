@@ -15,9 +15,17 @@
 
 // Forward declaration of `HybridFrameSpec` to properly resolve imports.
 namespace margelo::nitro::camera { class HybridFrameSpec; }
+// Forward declaration of `StableDetections` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct StableDetections; }
+// Forward declaration of `DetectionEvent` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectionEvent; }
 
 #include <memory>
 #include <VisionCamera/HybridFrameSpec.hpp>
+#include "StableDetections.hpp"
+#include "DetectionEvent.hpp"
+#include <vector>
+#include <string>
 
 namespace margelo::nitro::VisionAidObjectDetector {
 
@@ -51,6 +59,11 @@ namespace margelo::nitro::VisionAidObjectDetector {
     public:
       // Methods
       virtual void detect(const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec>& frame) = 0;
+      virtual StableDetections getStableDetections() = 0;
+      virtual std::vector<DetectionEvent> drainEvents() = 0;
+      virtual void reset() = 0;
+      virtual void speak(const std::string& text, bool interrupt) = 0;
+      virtual void stopSpeaking() = 0;
 
     protected:
       // Hybrid Setup

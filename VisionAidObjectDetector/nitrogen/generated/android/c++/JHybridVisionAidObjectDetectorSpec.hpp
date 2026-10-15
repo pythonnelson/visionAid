@@ -55,6 +55,11 @@ namespace margelo::nitro::VisionAidObjectDetector {
   public:
     // Methods
     void detect(const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec>& frame) override;
+    StableDetections getStableDetections() override;
+    std::vector<DetectionEvent> drainEvents() override;
+    void reset() override;
+    void speak(const std::string& text, bool interrupt) override;
+    void stopSpeaking() override;
 
   private:
     jni::global_ref<JHybridVisionAidObjectDetectorSpec::JavaPart> _javaPart;

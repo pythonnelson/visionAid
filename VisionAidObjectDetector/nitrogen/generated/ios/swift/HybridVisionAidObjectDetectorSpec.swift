@@ -15,6 +15,11 @@ public protocol HybridVisionAidObjectDetectorSpec_protocol: HybridObject {
 
   // Methods
   func detect(frame: (any HybridFrameSpec)) throws -> Void
+  func getStableDetections() throws -> StableDetections
+  func drainEvents() throws -> [DetectionEvent]
+  func reset() throws -> Void
+  func speak(text: String, interrupt: Bool) throws -> Void
+  func stopSpeaking() throws -> Void
 }
 
 public extension HybridVisionAidObjectDetectorSpec_protocol {

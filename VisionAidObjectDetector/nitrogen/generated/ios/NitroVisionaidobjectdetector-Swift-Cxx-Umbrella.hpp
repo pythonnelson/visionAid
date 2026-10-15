@@ -8,21 +8,34 @@
 #pragma once
 
 // Forward declarations of C++ defined types
+// Forward declaration of `DetectedObject` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectedObject; }
+// Forward declaration of `DetectionEventType` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { enum class DetectionEventType; }
+// Forward declaration of `DetectionEvent` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectionEvent; }
 // Forward declaration of `HybridFrameSpec` to properly resolve imports.
 namespace margelo::nitro::camera { class HybridFrameSpec; }
 // Forward declaration of `HybridVisionAidCurrencyRecognizerSpec` to properly resolve imports.
 namespace margelo::nitro::VisionAidObjectDetector { class HybridVisionAidCurrencyRecognizerSpec; }
 // Forward declaration of `HybridVisionAidObjectDetectorSpec` to properly resolve imports.
 namespace margelo::nitro::VisionAidObjectDetector { class HybridVisionAidObjectDetectorSpec; }
+// Forward declaration of `StableDetections` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct StableDetections; }
 
 // Include C++ defined types
+#include "DetectedObject.hpp"
+#include "DetectionEvent.hpp"
+#include "DetectionEventType.hpp"
 #include "HybridVisionAidCurrencyRecognizerSpec.hpp"
 #include "HybridVisionAidObjectDetectorSpec.hpp"
+#include "StableDetections.hpp"
 #include <NitroModules/Result.hpp>
 #include <VisionCamera/HybridFrameSpec.hpp>
 #include <exception>
 #include <memory>
 #include <string>
+#include <vector>
 
 // C++ helpers for Swift
 #include "NitroVisionaidobjectdetector-Swift-Cxx-Bridge.hpp"
