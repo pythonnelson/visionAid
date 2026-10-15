@@ -1,9 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { LayoutChangeEvent, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Camera, useCameraDevice, useCameraPermission, useFrameOutput } from "react-native-vision-camera"
 import { NitroModules } from "react-native-nitro-modules"
-import type { VisionAidObjectDetector, VisionAidCurrencyRecognizer } from "./VisionAidObjectDetector/src"
+import type { VisionAidObjectDetector, VisionAidCurrencyRecognizer, StableDetections } from "./VisionAidObjectDetector/src"
 import { routeFrame } from "./frameRouter"
+import { ObjectAnnouncer, describe } from "./objectAnnouncer"
+import { boxToView } from "./overlayLayout"
+
+/** Stable detections older than this are ignored (the camera is no longer feeding the detector). */
+const MAX_DETECTION_AGE_MS = 1500
 
 function App(): React.JSX.Element {
   const device = useCameraDevice("back")
@@ -26,13 +31,56 @@ function App(): React.JSX.Element {
   const [currencyOn, setCurrencyOn] = useState(false)
   const [currencyText, setCurrencyText] = useState("")
 
+  // ---- object detection: stable detections are shown on screen and (optionally) spoken
+  const announcer = useMemo(() => new ObjectAnnouncer(), [])
+  const [stable, setStable] = useState<StableDetections | null>(null)
+  const [voiceOn, setVoiceOn] = useState(true)
+  const [viewSize, setViewSize] = useState({ width: 0, height: 0 })
+  const lastSignature = useRef("")
+
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    setViewSize({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height })
+  }, [])
+
+  useEffect(() => {
+    if (currencyOn) return
+    const id = setInterval(() => {
+      const snap = objectDetector.getStableDetections()
+      const fresh = snap.ageMs >= 0 && snap.ageMs <= MAX_DETECTION_AGE_MS
+      const shown = fresh ? snap : null
+      // only re-render when something visible changed
+      const signature = shown
+        ? shown.detections.map(d => `${d.label}:${d.left.toFixed(2)},${d.top.toFixed(2)},${d.right.toFixed(2)},${d.bottom.toFixed(2)}`).join('|')
+        : ""
+      if (signature !== lastSignature.current) {
+        lastSignature.current = signature
+        setStable(shown)
+      }
+      // events must always be drained so the native queue cannot fill up, also when voice is off
+      const phrase = announcer.handle(objectDetector.drainEvents())
+      if (phrase && voiceOn) objectDetector.speak(phrase, false)
+    }, 400)
+    return () => clearInterval(id)
+  }, [currencyOn, voiceOn, objectDetector, announcer])
+
+  const toggleVoice = useCallback(() => {
+    if (voiceOn) objectDetector.stopSpeaking()
+    setVoiceOn(!voiceOn)
+  }, [voiceOn, objectDetector])
+
   const toggleCurrency = useCallback(() => {
     const next = !currencyOn
+    // either direction: silence object speech and forget stale detections/events so nothing old is announced later
+    objectDetector.stopSpeaking()
+    objectDetector.reset()
+    announcer.reset()
+    lastSignature.current = ""
+    setStable(null)
     currencyRecognizer.setActive(next)
     // setActive can be refused (e.g. model failed to load): trust the native side
     setCurrencyOn(currencyRecognizer.isActive())
     setCurrencyText(next ? currencyRecognizer.getStatus() || currencyRecognizer.getError() : "")
-  }, [currencyOn, currencyRecognizer])
+  }, [currencyOn, currencyRecognizer, objectDetector, announcer])
 
   // show what the currency recogniser last said / any error
   useEffect(() => {
@@ -79,13 +127,44 @@ function App(): React.JSX.Element {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={onLayout}>
       <Camera
         style={StyleSheet.absoluteFill}
         device={device}
         isActive={true}
         outputs={[frameOutput]}
       />
+      {!currencyOn && stable && stable.detections.map(d => {
+        const box = boxToView(d, stable.frameWidth, stable.frameHeight, viewSize.width, viewSize.height)
+        if (!box) return null
+        return (
+          <View
+            key={d.classId}
+            pointerEvents="none"
+            importantForAccessibility="no-hide-descendants"
+            style={[styles.box, { left: box.x, top: box.y, width: box.width, height: box.height }]}
+          >
+            <Text style={styles.boxLabel}>{d.label} {Math.round(d.score * 100)}%</Text>
+          </View>
+        )
+      })}
+      {!currencyOn && (
+        <View style={styles.objectPanel} accessible accessibilityLabel={stable && stable.detections.length > 0 ? `Seen: ${stable.detections.map(d => describe(d)).join(', ')}` : "Nothing recognised yet"}>
+          <Text style={styles.objectText}>
+            {stable && stable.detections.length > 0 ? stable.detections.map(d => describe(d)).join('\n') : "Looking…"}
+          </Text>
+        </View>
+      )}
+      {!currencyOn && (
+        <TouchableOpacity
+          style={styles.voiceButton}
+          onPress={toggleVoice}
+          accessibilityRole="button"
+          accessibilityLabel={voiceOn ? "Voice is on. Double tap to turn spoken object names off" : "Voice is off. Double tap to turn spoken object names on"}
+        >
+          <Text style={styles.voiceButtonText}>{voiceOn ? "Voice: on" : "Voice: off"}</Text>
+        </TouchableOpacity>
+      )}
       {currencyOn && (
         <View style={styles.currencyPanel} accessible accessibilityLabel={`Currency mode. ${currencyText}`}>
           <Text style={styles.currencyText}>{currencyText}</Text>
@@ -127,6 +206,58 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
     flexShrink: 1,
+  },
+
+  box: {
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: '#00e676',
+    borderRadius: 4
+  },
+
+  boxLabel: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#00e676',
+    color: 'black',
+    fontSize: 12,
+    fontWeight: 700,
+    paddingHorizontal: 4
+  },
+
+  objectPanel: {
+    position: 'absolute',
+    top: 60,
+    left: 16,
+    right: 90,
+    backgroundColor: 'rgba(0,0,0,0.65)',
+    borderRadius: 12,
+    padding: 12
+  },
+
+  objectText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 700
+  },
+
+  voiceButton: {
+    position: 'absolute',
+    top: 60,
+    right: 16,
+    minWidth: 64,
+    minHeight: 64,
+    borderRadius: 12,
+    backgroundColor: '#37474f',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 6
+  },
+
+  voiceButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 700,
+    textAlign: 'center'
   },
 
   currencyPanel: {
