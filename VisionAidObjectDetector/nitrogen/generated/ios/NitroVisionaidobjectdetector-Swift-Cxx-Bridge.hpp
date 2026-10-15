@@ -8,12 +8,20 @@
 #pragma once
 
 // Forward declarations of C++ defined types
+// Forward declaration of `DetectedObject` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectedObject; }
+// Forward declaration of `DetectionEventType` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { enum class DetectionEventType; }
+// Forward declaration of `DetectionEvent` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectionEvent; }
 // Forward declaration of `HybridFrameSpec` to properly resolve imports.
 namespace margelo::nitro::camera { class HybridFrameSpec; }
 // Forward declaration of `HybridVisionAidCurrencyRecognizerSpec` to properly resolve imports.
 namespace margelo::nitro::VisionAidObjectDetector { class HybridVisionAidCurrencyRecognizerSpec; }
 // Forward declaration of `HybridVisionAidObjectDetectorSpec` to properly resolve imports.
 namespace margelo::nitro::VisionAidObjectDetector { class HybridVisionAidObjectDetectorSpec; }
+// Forward declaration of `StableDetections` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct StableDetections; }
 
 // Forward declarations of Swift defined types
 // Forward declaration of `HybridFrameSpec_cxx` to properly resolve imports.
@@ -24,13 +32,18 @@ namespace NitroVisionaidobjectdetector { class HybridVisionAidCurrencyRecognizer
 namespace NitroVisionaidobjectdetector { class HybridVisionAidObjectDetectorSpec_cxx; }
 
 // Include C++ defined types
+#include "DetectedObject.hpp"
+#include "DetectionEvent.hpp"
+#include "DetectionEventType.hpp"
 #include "HybridVisionAidCurrencyRecognizerSpec.hpp"
 #include "HybridVisionAidObjectDetectorSpec.hpp"
+#include "StableDetections.hpp"
 #include <NitroModules/Result.hpp>
 #include <VisionCamera/HybridFrameSpec.hpp>
 #include <exception>
 #include <memory>
 #include <string>
+#include <vector>
 
 /**
  * Contains specialized versions of C++ templated types so they can be accessed from Swift,
@@ -89,6 +102,28 @@ namespace margelo::nitro::VisionAidObjectDetector::bridge::swift {
     return Result<std::string>::withError(error);
   }
   
+  // pragma MARK: std::vector<DetectedObject>
+  /**
+   * Specialized version of `std::vector<DetectedObject>`.
+   */
+  using std__vector_DetectedObject_ = std::vector<DetectedObject>;
+  inline std::vector<DetectedObject> create_std__vector_DetectedObject_(size_t size) noexcept {
+    std::vector<DetectedObject> vector;
+    vector.reserve(size);
+    return vector;
+  }
+  
+  // pragma MARK: std::vector<DetectionEvent>
+  /**
+   * Specialized version of `std::vector<DetectionEvent>`.
+   */
+  using std__vector_DetectionEvent_ = std::vector<DetectionEvent>;
+  inline std::vector<DetectionEvent> create_std__vector_DetectionEvent_(size_t size) noexcept {
+    std::vector<DetectionEvent> vector;
+    vector.reserve(size);
+    return vector;
+  }
+  
   // pragma MARK: std::shared_ptr<HybridVisionAidObjectDetectorSpec>
   /**
    * Specialized version of `std::shared_ptr<HybridVisionAidObjectDetectorSpec>`.
@@ -100,5 +135,23 @@ namespace margelo::nitro::VisionAidObjectDetector::bridge::swift {
   // pragma MARK: std::weak_ptr<HybridVisionAidObjectDetectorSpec>
   using std__weak_ptr_HybridVisionAidObjectDetectorSpec_ = std::weak_ptr<HybridVisionAidObjectDetectorSpec>;
   inline std__weak_ptr_HybridVisionAidObjectDetectorSpec_ weakify_std__shared_ptr_HybridVisionAidObjectDetectorSpec_(const std::shared_ptr<HybridVisionAidObjectDetectorSpec>& strong) noexcept { return strong; }
+  
+  // pragma MARK: Result<StableDetections>
+  using Result_StableDetections_ = Result<StableDetections>;
+  inline Result_StableDetections_ create_Result_StableDetections_(const StableDetections& value) noexcept {
+    return Result<StableDetections>::withValue(value);
+  }
+  inline Result_StableDetections_ create_Result_StableDetections_(const std::exception_ptr& error) noexcept {
+    return Result<StableDetections>::withError(error);
+  }
+  
+  // pragma MARK: Result<std::vector<DetectionEvent>>
+  using Result_std__vector_DetectionEvent__ = Result<std::vector<DetectionEvent>>;
+  inline Result_std__vector_DetectionEvent__ create_Result_std__vector_DetectionEvent__(const std::vector<DetectionEvent>& value) noexcept {
+    return Result<std::vector<DetectionEvent>>::withValue(value);
+  }
+  inline Result_std__vector_DetectionEvent__ create_Result_std__vector_DetectionEvent__(const std::exception_ptr& error) noexcept {
+    return Result<std::vector<DetectionEvent>>::withError(error);
+  }
 
 } // namespace margelo::nitro::VisionAidObjectDetector::bridge::swift

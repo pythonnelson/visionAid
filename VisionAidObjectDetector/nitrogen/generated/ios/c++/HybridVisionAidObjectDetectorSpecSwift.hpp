@@ -14,9 +14,23 @@ namespace NitroVisionaidobjectdetector { class HybridVisionAidObjectDetectorSpec
 
 // Forward declaration of `HybridFrameSpec` to properly resolve imports.
 namespace margelo::nitro::camera { class HybridFrameSpec; }
+// Forward declaration of `StableDetections` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct StableDetections; }
+// Forward declaration of `DetectedObject` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectedObject; }
+// Forward declaration of `DetectionEvent` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectionEvent; }
+// Forward declaration of `DetectionEventType` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { enum class DetectionEventType; }
 
 #include <memory>
 #include <VisionCamera/HybridFrameSpec.hpp>
+#include "StableDetections.hpp"
+#include "DetectedObject.hpp"
+#include <vector>
+#include <string>
+#include "DetectionEvent.hpp"
+#include "DetectionEventType.hpp"
 
 #include "NitroVisionaidobjectdetector-Swift-Cxx-Umbrella.hpp"
 
@@ -70,6 +84,40 @@ namespace margelo::nitro::VisionAidObjectDetector {
     // Methods
     inline void detect(const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec>& frame) override {
       auto __result = _swiftPart.detect(frame);
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline StableDetections getStableDetections() override {
+      auto __result = _swiftPart.getStableDetections();
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+      auto __value = std::move(__result.value());
+      return __value;
+    }
+    inline std::vector<DetectionEvent> drainEvents() override {
+      auto __result = _swiftPart.drainEvents();
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+      auto __value = std::move(__result.value());
+      return __value;
+    }
+    inline void reset() override {
+      auto __result = _swiftPart.reset();
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline void speak(const std::string& text, bool interrupt) override {
+      auto __result = _swiftPart.speak(text, std::forward<decltype(interrupt)>(interrupt));
+      if (__result.hasError()) [[unlikely]] {
+        std::rethrow_exception(__result.error());
+      }
+    }
+    inline void stopSpeaking() override {
+      auto __result = _swiftPart.stopSpeaking();
       if (__result.hasError()) [[unlikely]] {
         std::rethrow_exception(__result.error());
       }

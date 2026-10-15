@@ -4,7 +4,7 @@ VisionAid is an assistive app I am building for blind and low-vision users, espe
 
 ## What it does so far
 
-- **Object detection** – EfficientDet-Lite0 finds everyday objects (results are logged for now, not spoken yet). Notes: `VISIONAID_OBJECT_DETECTION_IMPLEMENTATION.md`.
+- **Object detection** – EfficientDet-Lite0 finds everyday objects; stable detections are drawn on screen and spoken ("Person ahead") with a Voice on/off button. Notes: `VISIONAID_OBJECT_DETECTION_IMPLEMENTATION.md`.
 - **Currency mode** – a separate model that recognises Sierra Leone banknotes (new and old Leone) and says the amount. Not tested with real notes yet. Notes: `VISIONAID_CURRENCY_RECOGNITION.md`.
 - Later: Krio spoken guidance, obstacle awareness.
 - **Coming back to currency later?** Start with `ml/currency/REAL_PHOTO_TESTING_GUIDE.md` (how to finish the real-note test). Presenting it? `VISIONAID_CURRENCY_PRESENTATION_NOTES.md`.
@@ -43,8 +43,8 @@ Build only: `cd android && ./gradlew app:assembleDebug`
 ## Tests
 
 ```bash
-cd android && ./gradlew :VisionAidObjectDetector:testDebugUnitTest   # Kotlin unit tests (47 pass)
-npx jest __tests__/frameRouter.test.ts                               # JS mode-routing tests (3 pass)
+cd android && ./gradlew :VisionAidObjectDetector:testDebugUnitTest   # Kotlin unit tests (53 pass)
+npx jest __tests__/frameRouter.test.ts __tests__/objectAnnouncer.test.ts   # JS tests (15 pass)
 ```
 `__tests__/App.test.tsx` fails already (Jest cannot read the vision-camera ES modules) – not caused by my changes, still to fix.
 

@@ -15,6 +15,11 @@ namespace margelo::nitro::VisionAidObjectDetector {
     // load custom methods/properties
     registerHybrids(this, [](Prototype& prototype) {
       prototype.registerHybridMethod("detect", &HybridVisionAidObjectDetectorSpec::detect);
+      prototype.registerHybridMethod("getStableDetections", &HybridVisionAidObjectDetectorSpec::getStableDetections);
+      prototype.registerHybridMethod("drainEvents", &HybridVisionAidObjectDetectorSpec::drainEvents);
+      prototype.registerHybridMethod("reset", &HybridVisionAidObjectDetectorSpec::reset);
+      prototype.registerHybridMethod("speak", &HybridVisionAidObjectDetectorSpec::speak);
+      prototype.registerHybridMethod("stopSpeaking", &HybridVisionAidObjectDetectorSpec::stopSpeaking);
     });
   }
 

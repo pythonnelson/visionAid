@@ -7,9 +7,27 @@
 
 #include "JHybridVisionAidObjectDetectorSpec.hpp"
 
+// Forward declaration of `StableDetections` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct StableDetections; }
+// Forward declaration of `DetectedObject` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectedObject; }
+// Forward declaration of `DetectionEvent` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { struct DetectionEvent; }
+// Forward declaration of `DetectionEventType` to properly resolve imports.
+namespace margelo::nitro::VisionAidObjectDetector { enum class DetectionEventType; }
 // Forward declaration of `HybridFrameSpec` to properly resolve imports.
 namespace margelo::nitro::camera { class HybridFrameSpec; }
 
+#include "StableDetections.hpp"
+#include "JStableDetections.hpp"
+#include "DetectedObject.hpp"
+#include <vector>
+#include "JDetectedObject.hpp"
+#include <string>
+#include "DetectionEvent.hpp"
+#include "JDetectionEvent.hpp"
+#include "DetectionEventType.hpp"
+#include "JDetectionEventType.hpp"
 #include <memory>
 #include <VisionCamera/HybridFrameSpec.hpp>
 #include <VisionCamera/JHybridFrameSpec.hpp>
@@ -50,6 +68,37 @@ namespace margelo::nitro::VisionAidObjectDetector {
   void JHybridVisionAidObjectDetectorSpec::detect(const std::shared_ptr<margelo::nitro::camera::HybridFrameSpec>& frame) {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<margelo::nitro::camera::JHybridFrameSpec::JavaPart> /* frame */)>("detect");
     method(_javaPart, std::dynamic_pointer_cast<margelo::nitro::camera::JHybridFrameSpec>(frame)->getJavaPart());
+  }
+  StableDetections JHybridVisionAidObjectDetectorSpec::getStableDetections() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<JStableDetections>()>("getStableDetections");
+    auto __result = method(_javaPart);
+    return __result->toCpp();
+  }
+  std::vector<DetectionEvent> JHybridVisionAidObjectDetectorSpec::drainEvents() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jni::local_ref<jni::JArrayClass<JDetectionEvent>>()>("drainEvents");
+    auto __result = method(_javaPart);
+    return [&](auto&& __input) {
+      size_t __size = __input->size();
+      std::vector<DetectionEvent> __vector;
+      __vector.reserve(__size);
+      for (size_t __i = 0; __i < __size; __i++) {
+        auto __element = __input->getElement(__i);
+        __vector.push_back(__element->toCpp());
+      }
+      return __vector;
+    }(__result);
+  }
+  void JHybridVisionAidObjectDetectorSpec::reset() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void()>("reset");
+    method(_javaPart);
+  }
+  void JHybridVisionAidObjectDetectorSpec::speak(const std::string& text, bool interrupt) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jni::alias_ref<jni::JString> /* text */, jboolean /* interrupt */)>("speak");
+    method(_javaPart, jni::make_jstring(text), interrupt);
+  }
+  void JHybridVisionAidObjectDetectorSpec::stopSpeaking() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void()>("stopSpeaking");
+    method(_javaPart);
   }
 
 } // namespace margelo::nitro::VisionAidObjectDetector
