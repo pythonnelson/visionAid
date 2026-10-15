@@ -8,6 +8,7 @@
 #include "NitroVisionaidobjectdetector-Swift-Cxx-Bridge.hpp"
 
 // Include C++ implementation defined types
+#include "HybridVisionAidCurrencyRecognizerSpecSwift.hpp"
 #include "HybridVisionAidObjectDetectorSpecSwift.hpp"
 #include "NitroVisionaidobjectdetector-Swift-Cxx-Umbrella.hpp"
 #include <NitroModules/NitroDefines.hpp>
@@ -23,6 +24,22 @@ namespace margelo::nitro::VisionAidObjectDetector::bridge::swift {
   void* NON_NULL get_std__shared_ptr_margelo__nitro__camera__HybridFrameSpec_(std__shared_ptr_margelo__nitro__camera__HybridFrameSpec_ cppType) {
     // Implemented in VisionCamera
     return margelo::nitro::camera::bridge::swift::get_std__shared_ptr_HybridFrameSpec_(cppType);
+  }
+  
+  // pragma MARK: std::shared_ptr<HybridVisionAidCurrencyRecognizerSpec>
+  std::shared_ptr<HybridVisionAidCurrencyRecognizerSpec> create_std__shared_ptr_HybridVisionAidCurrencyRecognizerSpec_(void* NON_NULL swiftUnsafePointer) noexcept {
+    NitroVisionaidobjectdetector::HybridVisionAidCurrencyRecognizerSpec_cxx swiftPart = NitroVisionaidobjectdetector::HybridVisionAidCurrencyRecognizerSpec_cxx::fromUnsafe(swiftUnsafePointer);
+    return std::make_shared<margelo::nitro::VisionAidObjectDetector::HybridVisionAidCurrencyRecognizerSpecSwift>(swiftPart);
+  }
+  void* NON_NULL get_std__shared_ptr_HybridVisionAidCurrencyRecognizerSpec_(std__shared_ptr_HybridVisionAidCurrencyRecognizerSpec_ cppType) {
+    std::shared_ptr<margelo::nitro::VisionAidObjectDetector::HybridVisionAidCurrencyRecognizerSpecSwift> swiftWrapper = std::dynamic_pointer_cast<margelo::nitro::VisionAidObjectDetector::HybridVisionAidCurrencyRecognizerSpecSwift>(cppType);
+    #ifdef NITRO_DEBUG
+    if (swiftWrapper == nullptr) [[unlikely]] {
+      throw std::runtime_error("Class \"HybridVisionAidCurrencyRecognizerSpec\" is not implemented in Swift!");
+    }
+    #endif
+    NitroVisionaidobjectdetector::HybridVisionAidCurrencyRecognizerSpec_cxx& swiftPart = swiftWrapper->getSwiftPart();
+    return swiftPart.toUnsafe();
   }
   
   // pragma MARK: std::shared_ptr<HybridVisionAidObjectDetectorSpec>
