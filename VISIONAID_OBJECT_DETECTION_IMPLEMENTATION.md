@@ -323,4 +323,48 @@ Caveats (not verified): I tuned this on one short log plus a 200-image COCO samp
 * Currency recognition is **not** possible with this model: COCO has no banknote class. That is why I built a separate currency model (see `VISIONAID_CURRENCY_RECOGNITION.md`).
 
 ---
+
+## 17. Stable detections returned to JavaScript – the app can now show and speak them (branch `feat/stable-detections-to-js`)
+
+This was the "natural next step" from sections 12 and 16.12: until now `detect(frame)` only logged results. Now JavaScript can read the stable objects, draw them, and speak them.
+
+### 17.1 How it works
+
+```
+camera thread:  detect(frame) → decode → DetectionStabilizer → StableDetectionStore (latest list + event queue)
+                                                                     │  (thread-safe, bounded)
+JS (every 400 ms, only while currency mode is OFF):                  ▼
+   getStableDetections() → boxes + list on screen          drainEvents() → ObjectAnnouncer → speak(text) → Android TextToSpeech
+```
+* **Native API** (`VisionAidObjectDetector.nitro.ts`, bindings regenerated with `npm run specs`): `detect(frame)` (unchanged), `getStableDetections()` → `{ frameWidth, frameHeight, ageMs, detections[] }`, `drainEvents()` → `[{ type: 'appeared' | 'disappeared', item }]`, `reset()`, `speak(text, interrupt)`, `stopSpeaking()`. A detected object is `{ label, classId, score, left, top, right, bottom }` with boxes normalised 0–1 on the upright frame.
+* **Native files:** `StableDetectionStore.kt` (the hand-over; the event queue keeps only the newest 32 events so memory cannot grow if JS stops reading; unit tested, 6 tests), `SpeechOutput.kt` (TextToSpeech wrapper with start/done/error logs and a small queue for phrases requested before the engine is ready), `HybridVisionAidObjectDetector.kt` (feeds the store after each frame, implements the new methods).
+* **JS files:** `objectAnnouncer.ts` (decides WHAT to say – pure TypeScript, unit tested), `overlayLayout.ts` (maps a normalised box to the preview using resizeMode `cover`), `App.tsx` (polling, boxes, list panel, Voice on/off button).
+* **Speech rules (`ObjectAnnouncer`):** only objects that **appeared** (already stable: ≥ 3 of 5 frames at ≥ 0.60) are spoken; disappearing is never announced; the same kind of object is not repeated within 10 s (stops repeats when detection flickers); several new objects become one sentence of at most 3, important ones first (person, car, bus, truck, motorcycle, bicycle, train, dog, stop sign, traffic light), e.g. "Person on your right, laptop ahead". Direction comes from the box centre: left of 33 %, right of 67 %, otherwise ahead. **No distance is spoken** – I have nothing that measures it.
+* **Language:** all wording is in `objectAnnouncer.ts` (`PHRASES`, `LABELS`), so adding Krio later means adding entries there; the native side only plays audio. English only for now (the speech engine is set to an English voice).
+* **Modes:** entering or leaving Currency mode silences object speech, clears the stabiliser and the event queue and resets the announcer, so nothing stale is spoken later. While currency mode is on the object detector gets no frames and JS does not poll it; stable data older than 1.5 s is ignored.
+* **UI:** green boxes with label and score, a text panel ("laptop ahead"), a "Voice: on/off" button (accessibility-labelled); boxes are hidden from TalkBack so they are not read twice.
+
+### 17.2 Tests I ran
+| Check | Result |
+|---|---|
+| `./gradlew :VisionAidObjectDetector:testDebugUnitTest app:assembleDebug` | BUILD SUCCESSFUL; **53 Android unit tests passed** (+6 `StableDetectionStoreTest`) |
+| `npx jest __tests__/objectAnnouncer.test.ts __tests__/frameRouter.test.ts` | **15 JS tests passed** (announcer wording/priority/cooldown/reset, direction, box mapping, mode routing) |
+| `npx tsc --noEmit` | no errors in the files I touched |
+| Samsung A72 (logcat + one screenshot) | see 17.3 |
+
+### 17.3 Seen on my phone (2026-10-15, A72)
+* Stable objects flowed native → JS → native: for example `STABLE appeared: person …` was followed by `TTS speak("Person ahead") returned SUCCESS` and the engine's `onStart` / `onDone`; `"Tv on your right"` was produced from a box on the right of the frame. The sentence text is built only in JavaScript, so this proves the JS round trip.
+* A screenshot showed the green box labelled "laptop 76 %", the panel text "laptop ahead", the Voice button and the Currency button.
+* **Voice off:** the same object appeared (event produced) but nothing was spoken; **Voice on:** it was spoken. **Currency mode on:** no object speech; **off:** detection and speech came back.
+* **Bug found and fixed on the device:** the very first phrase was lost ("Speech not ready; would say: Keyboard ahead") because text-to-speech started lazily. It now starts when the detector is created, and early phrases are queued (up to 3) until the engine is ready; afterwards the first phrase ("Laptop ahead") was spoken immediately.
+
+### 17.4 Not verified / limitations
+* I did not listen: `onDone` proves the engine played it, not that I can hear it.
+* Box alignment with the preview was only seen on a full-frame object (laptop). Boxes are mapped with the `cover` rule and the assumption that the analysed frame shows the same view as the preview; check a small object near an edge before trusting it.
+* The direction words ("on your left") are about the phone's view, not distance or safety; the detector is still a small COCO model with the error rate in section 16, so a spoken label can be wrong. It must not be used as a safety or navigation aid.
+* Only objects that **appear** are spoken; there is no "what is in front of me" on demand yet and no repeat button.
+* Two text-to-speech instances exist (currency mode and the detector); this works but they could share one later.
+* Android only; English only.
+
+---
 **See also:** `VISIONAID_CURRENCY_RECOGNITION.md` – the separate currency model and "currency mode" live on branch `feat/currency-recognition`. The object-detector code and model were not changed by that work (only `YuvPreprocessor.kt` got an extra, separate function, and `App.tsx` now routes frames through `frameRouter.ts`).

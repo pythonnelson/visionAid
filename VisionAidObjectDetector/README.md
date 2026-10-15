@@ -6,7 +6,7 @@ This is the native module (made from the Nitro Modules template) that holds Visi
 
 | HybridObject | Kotlin class | What it does |
 |---|---|---|
-| `VisionAidObjectDetector` | `HybridVisionAidObjectDetector.kt` | EfficientDet-Lite0 object detection (`detect(frame)`), see `VISIONAID_OBJECT_DETECTION_IMPLEMENTATION.md` |
+| `VisionAidObjectDetector` | `HybridVisionAidObjectDetector.kt` | EfficientDet-Lite0 object detection: `detect(frame)`, plus `getStableDetections()`, `drainEvents()`, `reset()`, `speak(text, interrupt)`, `stopSpeaking()` for the JS side (section 17 of `VISIONAID_OBJECT_DETECTION_IMPLEMENTATION.md`) |
 | `VisionAidCurrencyRecognizer` | `HybridVisionAidCurrencyRecognizer.kt` | Sierra Leone banknote classifier with speech, see `VISIONAID_CURRENCY_RECOGNITION.md` |
 
 Both are registered in [`nitro.json`](nitro.json) under `autolinking`. Android only (there is no Swift code, even though the specs list iOS).
@@ -15,7 +15,7 @@ Both are registered in [`nitro.json`](nitro.json) under `autolinking`. Android o
 
 - [`src/specs/`](src/specs): the TypeScript specs (`*.nitro.ts`) – the contract between JavaScript and Kotlin. [`src/index.ts`](src/index.ts) re-exports the types.
 - [`android/src/main/java/com/margelo/nitro/VisionAidObjectDetector/`](android/src/main/java/com/margelo/nitro/VisionAidObjectDetector/): my Kotlin code.
-  - detector: `HybridVisionAidObjectDetector.kt`, `DetectionDecoder.kt`, `DetectionStabilizer.kt`
+  - detector: `HybridVisionAidObjectDetector.kt`, `DetectionDecoder.kt`, `DetectionStabilizer.kt`, `StableDetectionStore.kt` (hand-over to JS), `SpeechOutput.kt` (text-to-speech)
   - currency: `HybridVisionAidCurrencyRecognizer.kt`, `CurrencyLabels.kt`, `CurrencyDecider.kt`
   - shared image code: `YuvPreprocessor.kt`, `YuvPlaneReader.kt`
 - [`android/src/main/assets/`](android/src/main/assets): `efficientdet_lite0.tflite`, `coco_labels.txt`, `currency_classifier.tflite`, `currency_labels.json`, `currency_thresholds.json`
@@ -26,6 +26,7 @@ Both are registered in [`nitro.json`](nitro.json) under `autolinking`. Android o
 
 ## Things I must remember
 
+0. Nitrogen does not accept inline union types or Kotlin keywords as property names (`object`) – use a named `type` and another property name.
 1. If I change a `*.nitro.ts` spec or `nitro.json`, regenerate the bindings from this folder: `npm run specs` (runs `tsc` then `nitrogen`), then rebuild.
 2. Run the unit tests from the repo's `android` folder: `./gradlew :VisionAidObjectDetector:testDebugUnitTest`.
 3. The currency assets are written by `ml/currency/scripts/export_tflite.py` – I should not copy them by hand.
