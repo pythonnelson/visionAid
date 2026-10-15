@@ -1,0 +1,35 @@
+{
+ "input_shape": [
+  1,
+  224,
+  224,
+  3
+ ],
+ "input_dtype": "float32",
+ "input_quant": [
+  0.0,
+  0.0
+ ],
+ "output_shape": [
+  1,
+  10
+ ],
+ "output_dtype": "float32",
+ "size_bytes": 3756028,
+ "quantize": "none",
+ "input_range": "0..255 RGB (rescaling is inside the model)",
+ "class_order": [
+  "NEW_1",
+  "NEW_2",
+  "NEW_5",
+  "NEW_10",
+  "NEW_20",
+  "OLD_1000",
+  "OLD_2000",
+  "OLD_5000",
+  "OLD_10000",
+  "NO_NOTE"
+ ],
+ "max_abs_diff_vs_keras": 1.1801719665527344e-05,
+ "argmax_agreement": 1.0
+}

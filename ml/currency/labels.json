@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "description": "SINGLE SOURCE OF TRUTH for the currency classifier. The array ORDER is the model's output order. Never reorder without retraining; export script copies this file to the Android assets and a unit test checks both copies are identical.",
+  "currency": "Leone",
+  "classes": [
+    {"index": 0, "id": "NEW_1",     "series": "new", "denomination": 1,     "currency_name": "Leone", "spoken_en": "New Leone, one"},
+    {"index": 1, "id": "NEW_2",     "series": "new", "denomination": 2,     "currency_name": "Leone", "spoken_en": "New Leone, two"},
+    {"index": 2, "id": "NEW_5",     "series": "new", "denomination": 5,     "currency_name": "Leone", "spoken_en": "New Leone, five"},
+    {"index": 3, "id": "NEW_10",    "series": "new", "denomination": 10,    "currency_name": "Leone", "spoken_en": "New Leone, ten"},
+    {"index": 4, "id": "NEW_20",    "series": "new", "denomination": 20,    "currency_name": "Leone", "spoken_en": "New Leone, twenty"},
+    {"index": 5, "id": "OLD_1000",  "series": "old", "denomination": 1000,  "currency_name": "Leone", "spoken_en": "Old Leone, one thousand"},
+    {"index": 6, "id": "OLD_2000",  "series": "old", "denomination": 2000,  "currency_name": "Leone", "spoken_en": "Old Leone, two thousand"},
+    {"index": 7, "id": "OLD_5000",  "series": "old", "denomination": 5000,  "currency_name": "Leone", "spoken_en": "Old Leone, five thousand"},
+    {"index": 8, "id": "OLD_10000", "series": "old", "denomination": 10000, "currency_name": "Leone", "spoken_en": "Old Leone, ten thousand"},
+    {"index": 9, "id": "NO_NOTE",   "series": "none", "denomination": 0,    "currency_name": "",      "spoken_en": ""}
+  ],
+  "folder_to_class": {
+    "sle_1": "NEW_1", "sle_2": "NEW_2", "sle_5": "NEW_5", "sle_10": "NEW_10", "sle_20": "NEW_20",
+    "sll_1000": "OLD_1000", "sll_2000": "OLD_2000", "sll_5000": "OLD_5000", "sll_10000": "OLD_10000"
+  }
+}

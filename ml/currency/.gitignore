@@ -1,0 +1,17 @@
+# keep the folder structure, ignore the photos
+dataset/**/*.jpg
+dataset/**/*.jpeg
+dataset/**/*.png
+test/**/*.jpg
+test/**/*.jpeg
+test/**/*.png
+negatives_source/
+processed/
+runs/
+dataset/**/*.webp
+dataset/**/*.heic
+test/**/*.webp
+test/**/*.heic
+__pycache__/
+scripts/__pycache__/
+reports/device_logs/
